@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multimodal-attendance-engagement-agent"
+version = "1.0.0"
+description = "AI-powered, privacy-preserving classroom intelligence system integrating computer vision, audio processing, and agent reasoning."
+authors = [{ name = "Classroom Intelligence Team" }]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pyyaml>=6.0",
+]
+full = [
+    "opencv-python>=4.8.0",
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "streamlit>=1.30.0",
+    "plotly>=5.18.0",
+]
+
+[project.scripts]
+classroom-agent = "main:main"

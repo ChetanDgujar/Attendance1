@@ -1,0 +1,9 @@
+[
+  {"student_id": "STU-101", "name": "Aarav Sharma", "seat": "Row 1, Seat 1"},
+  {"student_id": "STU-102", "name": "Priya Patel", "seat": "Row 1, Seat 2"},
+  {"student_id": "STU-103", "name": "Rohan Mehta", "seat": "Row 1, Seat 3"},
+  {"student_id": "STU-104", "name": "Ananya Singh", "seat": "Row 1, Seat 4"},
+  {"student_id": "STU-105", "name": "Kabir Verma", "seat": "Row 2, Seat 1"},
+  {"student_id": "STU-106", "name": "Diya Nair", "seat": "Row 2, Seat 2"},
+  {"student_id": "STU-107", "name": "Ishaan Gupta", "seat": "Row 2, Seat 3"}
+]

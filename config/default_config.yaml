@@ -1,0 +1,62 @@
+# ==============================================================================
+# Multimodal Attendance & Engagement Agent - Configuration Specification
+# Privacy-Preserving Classroom Intelligence System
+# ==============================================================================
+
+privacy:
+  anonymize_student_names: false
+  hash_salt: "privacy_salt_classroom_agent_2026"
+  store_raw_frames: false
+  retention_days: 30
+  local_inference_only: true
+
+attendance:
+  sustained_presence_window_sec: 10.0
+  sustained_presence_min_ratio: 0.60
+  tardy_grace_period_sec: 300.0  # 5 minutes
+  absence_timeout_sec: 60.0
+  export_format: "csv"
+  auto_export_on_session_end: true
+
+vision:
+  sample_fps: 5
+  face_detection_confidence: 0.65
+  head_pose_yaw_limit_deg: 25.0       # >25 deg = looking left/right
+  head_pose_pitch_down_limit_deg: -20.0 # <-20 deg = looking down at desk/phone
+  head_pose_pitch_up_limit_deg: 25.0    # >25 deg = looking up at ceiling
+  inactivity_drowsiness_sec: 12.0      # Sustained low pitch + zero motion
+  motion_activity_smoothing: 0.8
+  motion_fidget_threshold: 0.70
+
+audio:
+  sample_rate_hz: 16000
+  frame_duration_ms: 30
+  vad_rms_threshold: 0.025
+  monologue_threshold_sec: 90.0
+  sustained_silence_threshold_sec: 25.0
+  chatter_energy_threshold: 0.06
+
+fusion:
+  weights:
+    gaze_alignment: 0.35
+    head_pose_stability: 0.25
+    body_kinetic_activity: 0.20
+    acoustic_context: 0.20
+  penalties:
+    drowsiness_penalty: 0.45
+    persistent_distraction_penalty: 0.30
+  score_smoothing_alpha: 0.30
+
+agent:
+  evaluation_interval_sec: 5.0
+  alert_cooldown_sec: 15.0
+  attention_dip_threshold: 50.0
+  chatter_surge_threshold: 75.0
+  pacing_monologue_limit_sec: 120.0
+  enable_pedagogical_suggestions: true
+  decision_engine_mode: "hybrid" # "heuristic" or "hybrid" (with local/offline LLM hooks)
+
+server:
+  host: "127.0.0.1"
+  port: 8080
+  debug: false

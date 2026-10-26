@@ -224,6 +224,21 @@ class DatabaseManager:
             ).fetchall()
             return [dict(r) for r in rows]
 
+    def update_attendance_status(self, session_id: str, student_id: str, status: str) -> bool:
+        """Manually updates the attendance status of a student in a session."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                UPDATE attendance_records
+                SET status = ?
+                WHERE session_id = ? AND student_id = ?
+                """,
+                (status.upper(), session_id, student_id),
+            )
+            conn.commit()
+            return cursor.rowcount > 0
+
     # --- Engagement Telemetry ---
 
     def save_engagement_sample(

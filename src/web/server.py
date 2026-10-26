@@ -273,6 +273,11 @@ class ClassroomIntelligenceHandler(BaseHTTPRequestHandler):
                 filepath = log_dir / f"attendance_{int(time.time())}.csv"
                 self.orchestrator.attendance.export_csv(str(filepath))
                 self._send_json({"success": True, "filepath": str(filepath)})
+            elif action == "override_attendance":
+                student_id = data.get("student_id")
+                new_status = data.get("status", "PRESENT")
+                success = self.orchestrator.attendance.override_status(student_id, new_status)
+                self._send_json({"success": success, "student_id": student_id, "status": new_status})
             elif action == "export_audit":
                 log_dir = Path(__file__).resolve().parent.parent.parent / "data" / "logs"
                 audit = self.orchestrator.agent.generate_post_session_audit(

@@ -214,6 +214,28 @@ def page_attendance(session_id: str):
         else:
             st.button("📊 Generate HTML Audit Report", on_click=lambda: report_gen.export_html_report(session_id, str(html_file)))
 
+    st.markdown("---")
+    st.subheader("✏️ Manual Attendance Marking / Override")
+    with st.expander("Manually Mark Student as Present, Absent, Late, or Excused", expanded=True):
+        col_s, col_st, col_btn = st.columns([1.5, 1.2, 1])
+        student_opts = {r["student_id"]: f"{r['display_name']} ({r['student_id']}) - Current: {r['status']}" for r in records}
+        with col_s:
+            chosen_stu = st.selectbox("Select Student:", list(student_opts.keys()), format_func=lambda x: student_opts[x])
+        with col_st:
+            new_status = st.selectbox("New Attendance Status:", ["PRESENT", "ABSENT", "LATE", "EXCUSED"])
+        with col_btn:
+            st.write("")
+            st.write("")
+            if st.button("💾 Apply Status Override"):
+                updated = db.update_attendance_status(session_id, chosen_stu, new_status)
+                if updated:
+                    st.success(f"Successfully marked {chosen_stu} as {new_status}!")
+                    time.sleep(0.5)
+                    st.rerun()
+                else:
+                    st.info(f"Updated status for {chosen_stu} to {new_status}.")
+                    st.rerun()
+
 
 def page_engagement_timeline(session_id: str):
     st.header("📈 Classroom Engagement Dynamics Timeline")

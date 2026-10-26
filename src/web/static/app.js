@@ -417,8 +417,27 @@ function renderAttendanceTable(records) {
       <td class="mono-cell">${(r.presence_ratio * 100).toFixed(1)}%</td>
       <td class="mono-cell">${(r.confidence * 100).toFixed(0)}%</td>
       <td><span class="hash-pill">${r.privacy_hash ? r.privacy_hash.substring(0, 10) + '...' : '—'}</span></td>
+      <td>
+        <select class="override-select" onchange="overrideStudentAttendance('${escapeHtml(r.student_id)}', this.value)">
+          <option value="" disabled selected>Mark as...</option>
+          <option value="PRESENT">Present</option>
+          <option value="ABSENT">Absent</option>
+          <option value="TARDY">Late</option>
+          <option value="EXCUSED">Excused</option>
+        </select>
+      </td>
     </tr>
   `).join("");
+}
+
+async function overrideStudentAttendance(studentId, newStatus) {
+  if (!newStatus) return;
+  await fetch("/api/action", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "override_attendance", student_id: studentId, status: newStatus })
+  });
+  fetchAttendance();
 }
 
 async function togglePauseResume() {

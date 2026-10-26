@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Session Report - Classroom Session</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #F8FAFC; color: #1E293B; margin: 0; padding: 30px; }
+        .container { max-width: 1000px; margin: 0 auto; background: #FFFFFF; border-radius: 12px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+        h1, h2, h3 { color: #0F172A; }
+        .header-bar { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #E2E8F0; padding-bottom: 16px; margin-bottom: 24px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+        .stat-card { background: #F1F5F9; border-radius: 8px; padding: 16px; text-align: center; }
+        .stat-val { font-size: 26px; font-weight: 700; color: #2563EB; display: block; }
+        .stat-lbl { font-size: 12px; text-transform: uppercase; color: #64748B; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+        th, td { padding: 10px 14px; border-bottom: 1px solid #E2E8F0; text-align: left; }
+        th { background: #F8FAFC; font-size: 12px; text-transform: uppercase; color: #475569; }
+        .badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .badge-present { background: #DCFCE7; color: #15803D; }
+        .badge-late { background: #FEF3C7; color: #B45309; }
+        .badge-absent { background: #FEE2E2; color: #B91C1C; }
+        .badge-partial { background: #E0E7FF; color: #4338CA; }
+        .badge-transient_ignored { background: #F1F5F9; color: #64748B; }
+        .sugg-card { background: #F8FAFC; border-left: 4px solid #3B82F6; padding: 12px 16px; border-radius: 6px; margin-bottom: 10px; }
+        .sugg-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .priority { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+        .priority-urgent { background: #FEE2E2; color: #B91C1C; }
+        .priority-actionable { background: #FEF3C7; color: #B45309; }
+        .footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid #E2E8F0; font-size: 12px; color: #94A3B8; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <div>
+                <h1>🎓 Classroom Session Intelligence Report</h1>
+                <p style="margin: 0; color: #64748B;">Session: <strong>Classroom Session</strong> (SESS-20261026-223930)</p>
+            </div>
+            <div style="text-align: right;">
+                <span class="stat-val" style="color: #10B981;">Grade C</span>
+                <small style="color: #64748B;">Duration: 0.0 mins</small>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-val">56.5%</span>
+                <span class="stat-lbl">Classroom Engagement</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-val">75.0%</span>
+                <span class="stat-lbl">Attendance Rate</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-val">0%</span>
+                <span class="stat-lbl">Teacher Monologue</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-val">49%</span>
+                <span class="stat-lbl">Student Discussion</span>
+            </div>
+        </div>
+
+        <h2>👥 Student Attendance & Engagement Ledger</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Presence</th>
+                    <th>Avg Focus</th>
+                    <th>Attention Level</th>
+                    <th>Attention Dips</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            <tr>
+                <td style="font-family: monospace;">GUEST-999</td>
+                <td><strong>GUEST-999</strong></td>
+                <td><span class="badge badge-transient_ignored">TRANSIENT_IGNORED</span></td>
+                <td>3.5s (11.7%)</td>
+                <td><strong>34.1%</strong></td>
+                <td>LOW</td>
+                <td>7 flagged</td>
+            </tr>
+            
+            <tr>
+                <td style="font-family: monospace;">STU-101</td>
+                <td><strong>Aarav Sharma</strong></td>
+                <td><span class="badge badge-present">PRESENT</span></td>
+                <td>30.0s (100.0%)</td>
+                <td><strong>61.2%</strong></td>
+                <td>MODERATE</td>
+                <td>27 flagged</td>
+            </tr>
+            
+            <tr>
+                <td style="font-family: monospace;">STU-102</td>
+                <td><strong>Priya Patel</strong></td>
+                <td><span class="badge badge-present">PRESENT</span></td>
+                <td>30.0s (100.0%)</td>
+                <td><strong>62.3%</strong></td>
+                <td>MODERATE</td>
+                <td>27 flagged</td>
+            </tr>
+            
+            <tr>
+                <td style="font-family: monospace;">STU-103</td>
+                <td><strong>Rohan Mehta</strong></td>
+                <td><span class="badge badge-present">PRESENT</span></td>
+                <td>30.0s (100.0%)</td>
+                <td><strong>30.5%</strong></td>
+                <td>LOW</td>
+                <td>43 flagged</td>
+            </tr>
+            
+            <tr>
+                <td style="font-family: monospace;">STU-104</td>
+                <td><strong>Ananya Singh</strong></td>
+                <td><span class="badge badge-present">PRESENT</span></td>
+                <td>30.0s (100.0%)</td>
+                <td><strong>57.3%</strong></td>
+                <td>MODERATE</td>
+                <td>23 flagged</td>
+            </tr>
+            
+            <tr>
+                <td style="font-family: monospace;">STU-105</td>
+                <td><strong>Kabir Verma</strong></td>
+                <td><span class="badge badge-present">PRESENT</span></td>
+                <td>30.0s (100.0%)</td>
+                <td><strong>38.0%</strong></td>
+                <td>LOW</td>
+                <td>38 flagged</td>
+            </tr>
+            
+            <tr>
+                <td style="font-family: monospace;">STU-106</td>
+                <td><strong>Diya Nair</strong></td>
+                <td><span class="badge badge-present">PRESENT</span></td>
+                <td>15.5s (51.7%)</td>
+                <td><strong>86.6%</strong></td>
+                <td>HIGH</td>
+                <td>0 flagged</td>
+            </tr>
+            
+            <tr>
+                <td style="font-family: monospace;">STU-107</td>
+                <td><strong>Ishaan Gupta</strong></td>
+                <td><span class="badge badge-absent">ABSENT</span></td>
+                <td>0.0s (0.0%)</td>
+                <td><strong>56.5%</strong></td>
+                <td>MODERATE</td>
+                <td>0 flagged</td>
+            </tr>
+            
+            </tbody>
+        </table>
+
+        <h2 style="margin-top: 32px;">💡 AI Teaching Suggestions & Pedagogical Interventions</h2>
+        
+            <div class="sugg-card">
+                <div class="sugg-header">
+                    <strong>Student Drowsiness / Slump Detected</strong>
+                    <span class="priority priority-actionable">ACTIONABLE</span>
+                </div>
+                <p>STRETCH_BREAK</p>
+                <small style="color: #64748B;">Trigger: DROWSINESS_ALERT | Time: 25.0s</small>
+            </div>
+            
+            <div class="sugg-card">
+                <div class="sugg-header">
+                    <strong>Student Drowsiness / Slump Detected</strong>
+                    <span class="priority priority-actionable">ACTIONABLE</span>
+                </div>
+                <p>STRETCH_BREAK</p>
+                <small style="color: #64748B;">Trigger: DROWSINESS_ALERT | Time: 15.0s</small>
+            </div>
+            
+            <div class="sugg-card">
+                <div class="sugg-header">
+                    <strong>High Collaborative Momentum</strong>
+                    <span class="priority priority-pedagogical_tip">PEDAGOGICAL_TIP</span>
+                </div>
+                <p>WHITEBOARD_SYNTHESIS</p>
+                <small style="color: #64748B;">Trigger: INTERACTION_PEAK | Time: 0.0s</small>
+            </div>
+            
+
+        <div class="footer">
+            Generated offline by Multimodal Attendance & Engagement Agent | Privacy-Preserving Classroom Intelligence
+        </div>
+    </div>
+</body>
+</html>

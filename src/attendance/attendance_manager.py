@@ -17,6 +17,7 @@ class AttendanceStatus(str, Enum):
     PRESENT = "PRESENT"
     TARDY = "TARDY"
     ABSENT = "ABSENT"
+    EXCUSED = "EXCUSED"
     TRANSIENT_IGNORED = "TRANSIENT_IGNORED"
 
 
@@ -33,6 +34,7 @@ class StudentAttendanceRecord:
     confidence: float = 0.0
     sustained_intervals: List[Tuple[float, float]] = field(default_factory=list)
     enrolled: bool = True
+    manual_override: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         d = asdict(self)
@@ -125,6 +127,9 @@ class AttendanceManager:
 
     def _recalculate_statuses(self, session_elapsed: float):
         for rec in self.records.values():
+            if rec.manual_override:
+                continue
+
             if rec.first_seen is None or rec.total_active_seconds < 1e-3:
                 rec.status = AttendanceStatus.ABSENT
                 rec.confidence = 1.0
@@ -164,6 +169,20 @@ class AttendanceManager:
 
         session_duration = max(1.0, (self.session_end_time or 0.0) - (self.session_start_time or 0.0))
         self._recalculate_statuses(session_duration)
+
+    def override_status(self, student_id: str, new_status: str) -> bool:
+        """Manually overrides attendance status for a student (e.g. Present, Absent, Excused)."""
+        if student_id not in self.records:
+            return False
+        try:
+            status_enum = AttendanceStatus(new_status.upper())
+        except ValueError:
+            return False
+        rec = self.records[student_id]
+        rec.status = status_enum
+        rec.confidence = 1.0
+        rec.manual_override = True
+        return True
 
     def get_summary(self) -> Dict[str, Any]:
         """Returns statistical overview of attendance."""

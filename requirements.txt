@@ -1,14 +1,23 @@
-# Core System Dependencies (Optional enhancements for live camera / GPU acceleration)
-# Note: The system features built-in pure-Python fallbacks and runs out of the box with zero dependencies.
+# ==============================================================================
+# Multimodal Attendance & Engagement Agent - Dependencies
+# Target: Python 3.8+ (tested on Python 3.10 / 3.12 / 3.15) - CPU only
+# ==============================================================================
 
-# Computer Vision & Video Ingestion (optional for physical webcam & deep learning landmarks)
+# Computer Vision & Facial Perception
 opencv-python>=4.8.0
 numpy>=1.24.0
 
-# Optional Audio Analysis
+# Optional Deep Learning Face Mesh (Head Pose & Gaze Landmarks)
+mediapipe>=0.10.0; python_version < '3.13'
+
+# Audio Signal Processing & VAD
 scipy>=1.10.0
 
-# Optional Streamlit Web Interface
+# Analytics & Machine Learning
+pandas>=2.0.0
+scikit-learn>=1.2.0
+
+# Interactive Dashboard & Visualizations
 streamlit>=1.30.0
 plotly>=5.18.0
 

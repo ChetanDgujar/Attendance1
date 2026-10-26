@@ -1,190 +1,221 @@
 # 🎓 Multimodal Attendance & Engagement Agent
-### AI-Powered, Privacy-Preserving Classroom Intelligence System
+### AI-Powered, Privacy-Preserving, Fully Offline Classroom Intelligence System
 
-[![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
-[![Privacy Preserving](https://img.shields.io/badge/Privacy-100%25%20Offline%20%7C%20Zero--Cloud-emerald.svg)](#privacy-preserving-guarantees)
-[![Unit Tests](https://img.shields.io/badge/Tests-30%20Passed%20%28100%25%29-brightgreen.svg)](#test-suite)
+[![Python Version](https://img.shields.io/badge/Python-3.8%2B%20%7C%203.10-blue.svg)](https://www.python.org/)
+[![Privacy Preserving](https://img.shields.io/badge/Privacy-100%25%20Offline%20%7C%20Zero--Cloud-emerald.svg)](#-privacy--ethical-framework)
+[![Unit Tests](https://img.shields.io/badge/Tests-35%20Passed%20%28100%25%29-brightgreen.svg)](#-automated-testing)
 [![Architecture](https://img.shields.io/badge/Epics-9%20%7C%20Tasks%3A%2017-purple.svg)](EPICS_AND_TASKS.md)
 
 ---
 
-## 📌 Executive Overview
+## 📌 Executive Summary
 
-In educational institutions and professional training environments, attendance tracking remains largely manual or limited to basic biometric systems that fail to capture meaningful engagement and participation context. These traditional approaches are time-consuming, prone to inaccuracies, and provide no insight into learner attention, interaction patterns, or session effectiveness.
+The **Multimodal Attendance & Engagement Agent** is an AI-powered, privacy-preserving classroom intelligence system. It automatically tracks attendance via **sustained presence verification**, computes continuous **multimodal engagement trends**, provides **context-aware AI teaching suggestions**, and produces rich **student session analytics**.
 
-The **Multimodal Attendance & Engagement Agent** is an AI-powered, privacy-preserving classroom intelligence system. The system integrates **computer vision**, **audio signal processing**, and **agent-based reasoning** to:
-1. Automatically track attendance via **sustained presence verification** (eliminating false positives from hallway passersby or brief glitches).
-2. Continuously analyze **multimodal engagement trends** (head pose, kinetic movement, inactivity duration, voice activity detection).
-3. Generate **real-time, context-aware AI teaching suggestions** to assist educators in adjusting pacing, launching polls, or managing classroom attention drops.
-4. Provide comprehensive student session analytics and exportable pedagogical audits.
-
-Designed to operate **entirely offline**, the system ensures ethical deployment and full privacy preservation while providing actionable insights that support both educators and learners.
+Engineered to operate **100% offline** on standard CPU hardware (Intel Core i5 8th Gen / 8 GB RAM), the system enforces strict privacy safeguards, zero cloud telemetry, and complete data sovereignty.
 
 ---
 
-## 🎯 Supported Scenarios
+## 📐 System Architecture
 
-### 🔹 Scenario 1: Automated Attendance Tracking
-- Processes video feeds to detect and track participants with persistent multi-object tracking.
-- Attendance is evaluated based on **sustained presence** (e.g. participant present for > 60% of rolling session window or > 10 consecutive seconds) rather than single-frame detection, completely eliminating false positives caused by temporary appearances or passersby.
-- Automatically generates timestamped attendance ledgers (`PRESENT`, `TARDY`, `ABSENT`, `TRANSIENT_IGNORED`) with export to CSV and JSON formats.
+```mermaid
+flowchart TD
+    subgraph Ingestion ["1. Multimodal Ingestion Layer"]
+        V0[Live Webcam / Video File / Demo Simulator] --> V1[Frame Sampling & Normalization]
+        A0[Audio Stream / WAV File / Synthetic Audio] --> A1[PCM Frame Splitter]
+    end
 
-### 🔹 Scenario 2: Engagement and Session Dynamics Analysis
-- Continuously analyzes behavioral indicators:
-  - **Head Pose & 3D Gaze Orientation:** Yaw, Pitch, Roll estimation to identify frontal focus vs. looking at neighbors or smartphone/desk.
-  - **Movement Patterns:** Kinetic displacement metrics distinguishing attentive note-taking from restless fidgeting.
-  - **Inactivity & Drowsiness Detection:** Flags sustained immobility and downward head posture (> 12 seconds).
-  - **Audio Activity & Classroom Acoustics:** Frame-level RMS energy and Voice Activity Detection (VAD) categorizing instructional states (`TEACHER_MONOLOGUE`, `STUDENT_DISCUSSION`, `CHATTER_SURGE`, `SUSTAINED_SILENCE`).
-- Fuses vision and audio signals into a calibrated 0–100% engagement index with session timeline tracking.
+    subgraph Vision ["2. Computer Vision Pipeline (Local CPU)"]
+        V1 --> V2[Face & Participant Tracker\nIoU & Spatial Centroid Matching]
+        V2 --> V3[3D Head Pose Estimator\nYaw, Pitch, Roll & Frontal Gaze Score]
+        V2 --> V4[Kinetic Motion Analyzer\nMicro-Motion Energy & Drowsiness]
+    end
 
-### 🔹 Scenario 3: AI-Driven Teaching Suggestions
-- An autonomous pedagogical decision-support agent evaluates real-time classroom telemetry and delivers non-intrusive, actionable interventions:
-  - *"Attention dip detected across 60% of students during monologue → Suggestion: Introduce a quick poll or 2-minute Think-Pair-Share."*
-  - *"Continuous teacher monologue exceeding 90 seconds → Suggestion: Check student comprehension with a cold-call prompt."*
-  - *"Sustained silence detected → Suggestion: Offer a scaffolding hint."*
-- Generates post-session pedagogical audit reports with engagement letter grades (A, B+, B, C, D), pacing breakdowns, strengths, and growth recommendations.
+    subgraph Audio ["3. Classroom Acoustic Pipeline (Local CPU)"]
+        A1 --> A2[Voice Activity Detector\nRMS Energy & Zero Crossing Rate]
+        A2 --> A3[Classroom Acoustic Classifier\nMonologue, Discussion, Chatter, Silence]
+    end
+
+    subgraph Fusion ["4. Multimodal Fusion Engine"]
+        V3 --> F1[Weighted Signal Fusion\n0-100 Normalized Index]
+        V4 --> F1
+        A3 --> F1
+        F1 --> F2[Classroom Timeline & Milestone Events]
+    end
+
+    subgraph Attendance ["5. Sustained Presence Attendance Ledger"]
+        V2 --> AT1[Sliding Time Window Verification\nSustained >= 10s & Ratio >= 60%]
+        AT1 --> AT2[Anti-Glitch Filter: Ignore Hallway Passersby]
+        AT2 --> AT3[Status: Present / Late / Absent / Partial]
+    end
+
+    subgraph Agent ["6. AI Pedagogical Decision Support"]
+        F2 --> AG1[Contextual Rule Heuristic Engine]
+        A3 --> AG1
+        AG1 --> AG2[Teaching Suggestions Feed with Evidence & Actions]
+        AG1 --> AG3[Optional Local LLM Adapter\nOllama Fallback]
+    end
+
+    subgraph StorageReports ["7. Storage & Analytics Reports"]
+        AT3 --> DB[(SQLite Database\ndata/classroom.db)]
+        F1 --> DB
+        AG2 --> DB
+        DB --> EXP1[CSV Attendance Log]
+        DB --> EXP2[JSON Session Telemetry]
+        DB --> EXP3[Standalone HTML Audit Report]
+    end
+
+    subgraph Presentation ["8. Dashboard & UI Layer"]
+        DB --> ST[Streamlit Dashboard\napp/main.py]
+        DB --> WEB[Zero-Dependency Web UI\nsrc/web/static]
+    end
+```
 
 ---
 
-## 📊 Project Statistics & Structure
+## 🎯 Core Features & Scenarios
 
-- **Total Epics:** 9
-- **Total Tasks:** 17
-- **Total Subtasks:** 0
-- **Automated Tests:** 30 (100% passing)
+### 1. Automated Attendance Tracking
+- **Inputs:** Live webcam feed (`--cam 0`), recorded video file (`--video sample.mp4`), or synthetic classroom stream (`--demo`).
+- **Sustained Presence Logic:** Marks attendance based on continuous observation ($\ge 10\text{s}$ and $\ge 60\%$ ratio). Momentary appearances (e.g. hallway passerby visible for 3s) are automatically filtered out as `TRANSIENT_IGNORED`.
+- **Status Classification:** `PRESENT`, `LATE` (arrival after grace period), `PARTIAL`, `ABSENT`.
+- **Exports:** Automatic persistence to SQLite database and export to CSV and JSON.
 
-See [EPICS_AND_TASKS.md](EPICS_AND_TASKS.md) for detailed task breakdowns and [ARCHITECTURE.md](ARCHITECTURE.md) for mathematical models.
+### 2. Engagement & Session Dynamics Analysis
+- **Head Pose & 3D Gaze Orientation:** Estimates Yaw, Pitch, and Roll to measure attention toward the front whiteboard vs. looking at neighbors or smartphone/desk.
+- **Kinetic Motion & Drowsiness:** Tracks inter-frame motion energy; detects sustained downward immobility ($>12\text{s}$) to flag drowsiness.
+- **Classroom Acoustics:** Frame-level Voice Activity Detection (RMS + ZCR) classifies instructional dynamics: `TEACHER_MONOLOGUE`, `STUDENT_DISCUSSION`, `CHATTER_SURGE`, `SUSTAINED_SILENCE`.
+- **Fused Engagement Metric:** Calibrated weighted score ($0\text{--}100$) combining gaze alignment (0.35), head pose stability (0.25), motion stability (0.20), and acoustic relevance (0.20), with penalties for drowsiness and persistent distraction.
+
+### 3. AI-Driven Teaching Suggestions
+- Pedagogical decision-support engine delivers real-time, non-intrusive recommendations:
+  - *Monologue Fatigue (>90s):* Recommends pausing for a 2-minute Think-Pair-Share.
+  - *Attention Dip (<50%):* Suggests an interactive formative check-in poll.
+  - *Classroom Dead Silence (>20s):* Recommends scaffolding hints or true/false formulation.
+  - *Student Drowsiness:* Suggests a physical stretch break.
+- **Strictly Assistive:** Never enforces decisions, never ranks or punishes students.
+- **Optional Local LLM:** Includes an Ollama adapter (`src/agent/local_llm.py`) disabled by default with graceful fallback.
+
+### 4. Student Session Analytics & Reporting
+- **Per-Student Reports:** Presence duration, focus score, attention category (High/Moderate/Low), and low-attention interval breakdown.
+- **Session Reports:** Overall engagement letter grade (A–D), monologue vs. discussion ratio, and action plans.
+- **Formats:** Standalone HTML reports with inline styling, CSV logs, and JSON telemetry.
+
+### 5. Multi-Page Streamlit Dashboard
+- 🎥 **Live & Video Session:** Live spatial seating HUD, radial engagement gauge, real-time alert feed.
+- 📋 **Attendance Ledger:** Filterable student roll call, search bar, CSV/HTML download buttons.
+- 📈 **Engagement Timeline:** Interactive timeseries line charts, milestone event markers, acoustic breakdown.
+- 👤 **Student Analytics:** Individual focus profiles and low-attention interval lists.
+- 💡 **Teaching Suggestions:** Evidence-based pedagogical advisory feed.
+- ⚙️ **Settings & Privacy:** Anonymization toggle, face blurring, weight adjustment sliders, and data retention purge.
+
+---
+
+## 📁 Project Structure
 
 ```
 multimodal-attendance-engagement-agent/
-├── README.md                          # Comprehensive documentation
-├── ARCHITECTURE.md                    # In-depth architectural & mathematical design
-├── EPICS_AND_TASKS.md                 # 9 Epics and 17 Tasks tracking matrix
-├── requirements.txt                   # Optional dependencies (pure Python core runs out-of-the-box)
-├── pyproject.toml                     # Modern package manifest
+├── app/
+│   └── main.py                        # Multi-page Streamlit Dashboard
 ├── config/
-│   └── default_config.yaml            # System thresholds, temporal windows, fusion weights
+│   ├── config.yaml                    # System thresholds, weights, and settings
+│   └── default_config.yaml            # Fallback configuration
 ├── data/
+│   ├── classroom.db                   # SQLite database (sessions, attendance, samples)
 │   ├── sample_roster.json             # Enrolled student roster
-│   ├── sample_session.wav             # Synthesized classroom audio
-│   └── logs/                          # Output attendance logs & audit reports
+│   ├── sample_session.wav             # Synthesized classroom audio track
+│   └── logs/                          # Output CSVs, JSONs, and HTML reports
+├── scripts/
+│   ├── run_session.py                 # Main session execution CLI
+│   ├── generate_demo_data.py          # Synthetic dataset & session generator
+│   ├── run_dashboard.bat              # One-click Windows dashboard launcher
+│   ├── run_demo.bat                   # One-click Windows simulation demo
+│   └── run_tests.bat                  # One-click Windows test runner
 ├── src/
-│   ├── __init__.py
-│   ├── config.py                      # Strongly-typed configuration dataclasses & parsers
-│   ├── privacy/
-│   │   └── anonymizer.py              # HMAC-SHA256 pseudonymization & telemetry scrubber
-│   ├── vision/
-│   │   ├── face_tracker.py            # Multi-target spatial tracker & sustained presence
-│   │   ├── head_pose.py               # Yaw, Pitch, Roll & 3D gaze focus classifier
-│   │   ├── motion_analyzer.py         # Kinetic energy, micro-motion, and drowsiness detector
-│   │   └── synthetic_video.py         # Classroom camera & multi-student stream simulator
-│   ├── audio/
-│   │   ├── vad.py                     # Voice Activity Detection & frame RMS energy
-│   │   ├── acoustic_classifier.py     # Classroom acoustic dynamic state classifier
-│   │   └── synthetic_audio.py         # Waveform synthesis & WAV stream reader
-│   ├── fusion/
-│   │   ├── multimodal_fusion.py       # Calibrated vision + audio composite engagement index
-│   │   └── session_timeline.py        # Historical timeseries & milestone event detection
 │   ├── agent/
-│   │   ├── decision_rules.py          # Evidence-based pedagogical rule engine
-│   │   └── teaching_agent.py          # Decision-support agent & post-session auditor
+│   │   ├── decision_rules.py          # Pedagogical heuristic rule engine
+│   │   ├── local_llm.py               # Optional local LLM adapter (Ollama)
+│   │   └── teaching_agent.py          # Decision-support advisor & session auditor
 │   ├── attendance/
-│   │   └── attendance_manager.py      # Sustained presence ledger, tardiness, & CSV/JSON export
-│   └── web/
-│       ├── server.py                  # High-concurrency HTTP server & REST API
-│       ├── app_streamlit.py           # Optional Streamlit UI interface
-│       └── static/
-│           ├── index.html             # Glassmorphic single-page classroom dashboard
-│           ├── style.css              # Modern dark-mode styling & canvas visualizer
-│           └── app.js                 # Real-time WebSocket/polling live client controller
-├── tests/
-│   ├── test_privacy.py                # Pseudonymization & hashing tests
-│   ├── test_attendance.py             # Sustained presence & passerby rejection tests
-│   ├── test_vision.py                 # Face tracking, head pose, & motion tests
-│   ├── test_audio.py                  # VAD & acoustic classification tests
-│   ├── test_fusion.py                 # Multimodal fusion & timeline tests
-│   ├── test_agent.py                  # Rule triggers & pedagogical audit tests
-│   └── test_integration.py           # In-memory HTTP server & REST endpoint tests
-└── scripts/
-    ├── run_demo.py                    # Terminal simulation runner
-    ├── generate_sample_data.py        # Sample roster and audio generator
-    ├── run_dashboard.bat              # One-click Windows dashboard launcher
-    ├── run_demo.bat                   # One-click Windows simulation demo launcher
-    └── run_tests.bat                  # One-click Windows test runner
+│   │   └── attendance_manager.py      # Sustained presence ledger & anti-glitch filter
+│   ├── audio/
+│   │   ├── acoustic_classifier.py     # Classroom acoustic dynamic classifier
+│   │   ├── synthetic_audio.py         # Audio synthesizer & WAV processor
+│   │   └── vad.py                     # RMS energy & Voice Activity Detection
+│   ├── config.py                      # Strongly-typed configuration loader
+│   ├── fusion/
+│   │   ├── multimodal_fusion.py       # Calibrated multimodal engagement index
+│   │   └── session_timeline.py        # Timeseries timeline & milestone detector
+│   ├── privacy/
+│   │   └── anonymizer.py              # HMAC-SHA256 pseudonymizer & telemetry scrubber
+│   ├── reports/
+│   │   └── report_generator.py        # Standalone HTML, JSON, and Markdown reports
+│   ├── storage/
+│   │   ├── database.py                # SQLite models & retention cleanup
+│   │   └── exporter.py                # CSV and JSON export pipelines
+│   └── vision/
+│       ├── face_tracker.py            # Spatial multi-object tracker
+│       ├── head_pose.py               # 3D Euler angles & frontal gaze focus
+│       ├── motion_analyzer.py         # Kinetic energy & drowsiness detector
+│       └── synthetic_video.py         # Video stream simulator & persona generator
+├── tests/                             # 35 Unit and integration tests (100% passing)
+├── ARCHITECTURE.md                    # In-depth architectural & mathematical design
+├── EPICS_AND_TASKS.md                 # 9 Epics and 17 Tasks tracking specification
+├── ETHICS.md                          # Limitations, bias risks, & non-punitive guidelines
+├── requirements.txt                   # Dependency manifest
+└── pyproject.toml                     # Modern package manifest
 ```
-
----
-
-## 💻 System Requirements
-
-### Hardware Requirements
-- **Processor:** Intel Core i5 (8th Gen or above) / AMD Ryzen 5 or equivalent
-- **RAM:** Minimum 8 GB (Recommended: 16 GB for concurrent vision streaming & multitasking)
-- **Storage:** 256 GB SSD (or 500 GB HDD minimum)
-- **Camera & Microphone (Optional for live classroom capture):** Standard 720p/1080p USB webcam & omnidirectional microphone
-
-### Software Requirements
-- **Operating System:** Windows 10 / 11, macOS (Monterey or later), or Linux (Ubuntu 20.04+)
-- **Python:** Version 3.8 or above
-- **Web Browser:** Latest version of Google Chrome, Mozilla Firefox, or Microsoft Edge
 
 ---
 
 ## 🚀 Quick Start Guide
 
-### 1. Launch the Interactive Web Dashboard
-Run the built-in HTTP dashboard server (starts in < 1 second, zero external packages needed):
-
+### 1. Run the Multi-Page Streamlit Dashboard
 ```bash
-python main.py dashboard --port 8080
+streamlit run app/main.py
 ```
-Or double-click `scripts\run_dashboard.bat` on Windows.  
-Open your browser to: **[http://127.0.0.1:8080](http://127.0.0.1:8080)**
+*(Or use the zero-dependency built-in server: `python main.py dashboard --port 8080`)*
 
-#### Features in the Web Dashboard:
-- **Spatial Perception HUD:** Real-time canvas rendering of classroom seating, bounding boxes, gaze orientation arrows, and colored attention auras.
-- **Radial Engagement Gauge:** Instantaneous classroom attention index (0–100%) with focus category distribution.
-- **Acoustic Waveform Visualizer:** Live classification of teacher monologue vs. collaborative dialogue vs. chatter vs. silence.
-- **AI Teaching Suggestions Feed:** Real-time priority alerts with pedagogical rationale and recommendations.
-- **Sustained Presence Attendance Ledger:** Live attendance records with one-click CSV export and privacy mode toggling.
-
----
-
-### 2. Run the Terminal Simulation Demo
-To observe the complete multimodal processing lifecycle in terminal:
-
+### 2. Run a Classroom Session via CLI
 ```bash
-python main.py demo --duration 30
+# Run simulation demo
+python scripts/run_session.py --demo --duration 30
+
+# Run with a recorded video file
+python scripts/run_session.py --video sample.mp4 --name "Biology Lecture"
+
+# Run with live camera (webcam index 0)
+python scripts/run_session.py --cam 0 --duration 60 --anonymize
 ```
-Or double-click `scripts\run_demo.bat`.
 
-Output showcases:
-- Real-time ASCII telemetry ticks.
-- Dynamic detection of active student engagement and drowsiness alerts.
-- Automated attendance reconciliation verifying that sustained participants are marked `PRESENT`, late arrivals marked `TARDY`, and transient hallway passersby (`GUEST-999`) are filtered out as `TRANSIENT_IGNORED`.
-- Automated export of `data/logs/demo_attendance.csv` and `data/logs/demo_audit.md`.
+### 3. Generate Rich Offline Demo History
+```bash
+python scripts/generate_demo_data.py
+```
+Prepopulates the SQLite database with 3 historical sessions, student rosters, timeseries curves, and exports HTML reports.
 
----
-
-### 3. Run the Automated Test Suite
-To verify all 30 unit and integration tests:
-
+### 4. Run the Full Test Suite (35 Tests)
 ```bash
 python main.py test
 ```
-Or double-click `scripts\run_tests.bat`.
+*Or using pytest:*
+```bash
+pytest tests/ -v
+```
 
 ---
 
-## 🔒 Privacy-Preserving Guarantees
+## ⚖️ Privacy & Ethical Framework
 
-Classroom deployments must respect student privacy and data sovereignty. This system is architected around 4 core privacy principles:
-1. **Zero Raw Video Persistence:** Raw camera frames and audio buffers are processed transiently in volatile RAM and immediately discarded. No video is ever stored to disk.
-2. **Cryptographic Pseudonymization:** Student identifiers can be masked into collision-resistant pseudonyms (`Learner-XXXX`) via HMAC-SHA256.
-3. **One-Way Feature Hashing:** Facial geometric vectors are quantized and cryptographically hashed before audit logging, preventing biometric reconstruction.
-4. **100% Offline Edge Execution:** All vision, acoustic, and decision reasoning operates strictly on-premise without cloud transmission.
+- **100% Local Processing:** Zero cloud APIs or telemetry transmissions.
+- **Zero Video Persistence:** Raw camera frames are analyzed in RAM and immediately discarded.
+- **Cryptographic Pseudonymization:** Students' names can be automatically replaced with salted hashes (`Student_01` or `Learner-XXXX`).
+- **Data Retention Limit:** Automated purge deletes telemetry older than $N$ days (`storage.retention_days`).
+- **Assistive, Non-Punitive Policy:** Engagement scores are behavioral estimates, not evaluations of intelligence or worth. See [`ETHICS.md`](ETHICS.md).
 
 ---
 
-## 📄 License
-This project is licensed under the MIT License.
+## ⚠️ Known Limitations
+1. **Extreme Angles:** Peripheral seats in wide lecture halls can reduce head pose precision; front-facing camera positioning is recommended.
+2. **Lighting Sensitivities:** Severe underexposure or direct backlighting can impact facial landmark detection.
+3. **Acoustic Reverberation:** Large echoey auditoriums may require adjusting `audio.vad_rms_threshold` in `config/config.yaml`.

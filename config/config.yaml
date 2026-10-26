@@ -1,0 +1,73 @@
+# ==============================================================================
+# Multimodal Attendance & Engagement Agent - Configuration Specification
+# Privacy-Preserving Classroom Intelligence System
+# ==============================================================================
+
+system:
+  offline_mode: true
+  log_level: "INFO"
+  session_name: "Classroom_Session"
+
+vision:
+  sample_fps: 5
+  min_detection_confidence: 0.65
+  blur_faces: false # Privacy face blurring in preview frames
+  head_pose:
+    yaw_limit_deg: 25.0 # Angles > 25° indicate looking away
+    pitch_down_limit_deg: -20.0 # Angles < -20° indicate looking down at desk/phone
+    pitch_up_limit_deg: 25.0
+  motion:
+    fidget_threshold: 0.70
+    static_threshold: 0.05
+    inactivity_drowsiness_sec: 12.0 # Immobility combined with looking down
+
+audio:
+  sample_rate_hz: 16000
+  frame_duration_ms: 30
+  vad_rms_threshold: 0.025
+  monologue_threshold_sec: 90.0
+  silence_threshold_sec: 20.0
+  chatter_energy_threshold: 0.06
+
+attendance:
+  sustained_window_sec: 10.0 # Minimum consecutive observation to avoid passerby false positives
+  sustained_min_ratio: 0.60 # Minimum proportion of session present for full 'Present' status
+  partial_presence_ratio: 0.35 # Below 60% but above 35% is marked 'Partial'
+  tardy_grace_period_sec: 300.0 # Arrival after 5 minutes is marked 'Late' / 'Tardy'
+
+fusion:
+  weights:
+    gaze_alignment: 0.35
+    head_pose_stability: 0.25
+    body_kinetic_activity: 0.20
+    acoustic_context: 0.20
+  penalties:
+    drowsiness_penalty: 0.45
+    distraction_penalty: 0.30
+  time_windows_sec: [30, 60, 300]
+  score_smoothing_alpha: 0.30
+
+agent:
+  evaluation_interval_sec: 5.0
+  alert_cooldown_sec: 15.0
+  attention_dip_threshold: 50.0
+  chatter_surge_threshold: 75.0
+  monologue_limit_sec: 120.0
+  local_llm:
+    enabled: false
+    provider: "ollama"
+    endpoint: "http://localhost:11434"
+    model: "llama3:8b"
+    timeout_sec: 4.0
+
+storage:
+  db_path: "data/classroom.db"
+  retention_days: 30
+  auto_export_csv: true
+  auto_export_json: true
+
+privacy:
+  anonymize_all_ids: false # Set true to replace named IDs with Student_01, Student_02...
+  store_raw_frames: false # Strictly forbidden by default
+  hash_salt: "privacy_salt_classroom_agent_2026"
+  require_consent_notice: true

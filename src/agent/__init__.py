@@ -1,6 +1,7 @@
 """AI-driven pedagogical decision support and teaching suggestions agent."""
 from .decision_rules import PedagogicalRuleEngine, RuleTrigger
 from .teaching_agent import TeachingAgent, TeachingSuggestion, SessionPedagogicalAudit
+from .local_llm import LocalLLMAdapter
 
 __all__ = [
     "PedagogicalRuleEngine",
@@ -8,4 +9,5 @@ __all__ = [
     "TeachingAgent",
     "TeachingSuggestion",
     "SessionPedagogicalAudit",
+    "LocalLLMAdapter",
 ]

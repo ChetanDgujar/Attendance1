@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🚀 1. Run Classroom Web Dashboard",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "args": ["dashboard", "--port", "8080"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "🎬 2. Run Simulation Demo (30s)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "args": ["demo", "--duration", "30"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "🧪 3. Run Test Suite",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "args": ["test"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

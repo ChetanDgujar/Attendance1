@@ -17,6 +17,5 @@ data/logs/*.md
 !data/logs/.gitkeep
 
 # IDEs
-.vscode/
 .idea/
 *.swp

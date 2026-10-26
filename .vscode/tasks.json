@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Web Dashboard",
+      "type": "shell",
+      "command": "python main.py dashboard --port 8080",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Simulation Demo",
+      "type": "shell",
+      "command": "python main.py demo --duration 30",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Unit Tests",
+      "type": "shell",
+      "command": "python main.py test",
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}

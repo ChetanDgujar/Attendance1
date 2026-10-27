@@ -25,6 +25,17 @@ from src.fusion.session_timeline import SessionTimelineTracker
 from src.agent.teaching_agent import TeachingAgent
 from src.attendance.attendance_manager import AttendanceManager, AttendanceStatus
 
+# Top-level exports for Vercel Serverless Function entrypoint
+try:
+    from api.index import handler as _v_handler
+    app = _v_handler
+    application = _v_handler
+    handler = _v_handler
+except Exception:
+    app = None
+    application = None
+    handler = None
+
 
 # Page configuration
 st.set_page_config(

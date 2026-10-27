@@ -16,6 +16,17 @@ from src.web.server import ClassroomIntelligenceServer
 from scripts.run_demo import run_classroom_simulation
 from scripts.generate_sample_data import generate_all
 
+# Top-level exports for Vercel Serverless Function entrypoint
+try:
+    from api.index import handler as _v_handler
+    app = _v_handler
+    application = _v_handler
+    handler = _v_handler
+except Exception:
+    app = None
+    application = None
+    handler = None
+
 
 def run_dashboard(host: str = "127.0.0.1", port: int = 8080):
     print("=" * 80)

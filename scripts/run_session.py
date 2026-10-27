@@ -203,10 +203,12 @@ if __name__ == "__main__":
     parser.add_argument("--demo", action="store_true", default=True, help="Run synthetic classroom simulation")
     parser.add_argument("--video", type=str, default=None, help="Path to recorded video file (e.g. sample.mp4)")
     parser.add_argument("--cam", type=int, default=None, help="Live webcam index (e.g. 0)")
+    parser.add_argument("--webcam", action="store_true", default=False, help="Use default live webcam (index 0)")
     parser.add_argument("--duration", type=float, default=30.0, help="Duration in seconds (default: 30)")
     parser.add_argument("--anonymize", action="store_true", default=False, help="Enable identity pseudonymization")
     parser.add_argument("--name", type=str, default="Classroom Session", help="Session descriptive title")
 
     args = parser.parse_args()
-    source = "video" if args.video else ("camera" if args.cam is not None else "demo")
+    cam_idx = 0 if args.webcam else args.cam
+    source = "video" if args.video else ("camera" if cam_idx is not None else "demo")
     run_session(source_type=source, video_path=args.video, duration_sec=args.duration, anonymize=args.anonymize, session_name=args.name)

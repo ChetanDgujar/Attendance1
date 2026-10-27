@@ -74,10 +74,14 @@ def main():
     demo_p = subparsers.add_parser("demo", help="Run simulated end-to-end classroom session in terminal")
     demo_p.add_argument("--duration", type=float, default=30.0, help="Duration in seconds (default: 30)")
 
-    # Command: dashboard
+    # Command: dashboard / server
     dash_p = subparsers.add_parser("dashboard", help="Start the interactive web dashboard server")
     dash_p.add_argument("--host", type=str, default="127.0.0.1", help="Host interface (default: 127.0.0.1)")
     dash_p.add_argument("--port", type=int, default=8080, help="Port (default: 8080)")
+
+    server_p = subparsers.add_parser("server", help="Alias for dashboard: start the interactive web dashboard server")
+    server_p.add_argument("--host", type=str, default="127.0.0.1", help="Host interface (default: 127.0.0.1)")
+    server_p.add_argument("--port", type=int, default=8080, help="Port (default: 8080)")
 
     # Command: test
     subparsers.add_parser("test", help="Run automated test suite")
@@ -89,7 +93,7 @@ def main():
 
     if args.command == "demo":
         run_classroom_simulation(duration_sec=args.duration)
-    elif args.command == "dashboard":
+    elif args.command in ("dashboard", "server"):
         run_dashboard(host=args.host, port=args.port)
     elif args.command == "test":
         run_tests()

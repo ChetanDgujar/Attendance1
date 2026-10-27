@@ -1,5 +1,5 @@
 """Vercel Serverless Function entrypoint for Multimodal Attendance & Engagement Agent.
-Handles all /api/* requests on Vercel serverless environment.
+Handles all /api/* requests and static web dashboard serving on Vercel.
 """
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
@@ -15,18 +15,20 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.config import SystemConfig
-from src.privacy.anonymizer import PrivacyEngine
-from src.attendance.attendance_manager import AttendanceManager, AttendanceStatus
-from src.vision.face_tracker import FaceTracker
-from src.vision.head_pose import HeadPoseEstimator
-from src.vision.motion_analyzer import MotionAnalyzer
-from src.vision.synthetic_video import SyntheticClassroomStream
-from src.audio.synthetic_audio import SyntheticAudioGenerator
-from src.audio.acoustic_classifier import AcousticClassifier
-from src.fusion.multimodal_fusion import MultimodalFusionEngine
-from src.fusion.session_timeline import SessionTimelineTracker
-from src.agent.teaching_agent import TeachingAgent
+# Safe optional imports for serverless environments
+try:
+    from src.config import SystemConfig
+    from src.privacy.anonymizer import PrivacyEngine
+    from src.attendance.attendance_manager import AttendanceManager, AttendanceStatus
+    from src.vision.face_tracker import FaceTracker
+    from src.vision.head_pose import HeadPoseEstimator
+    from src.vision.motion_analyzer import MotionAnalyzer
+    from src.audio.acoustic_classifier import AcousticClassifier
+    from src.fusion.multimodal_fusion import MultimodalFusionEngine
+    from src.fusion.session_timeline import SessionTimelineTracker
+    from src.agent.teaching_agent import TeachingAgent
+except Exception:
+    pass
 
 # Global state for serverless execution
 _start_time = time.time()
@@ -35,20 +37,67 @@ _manual_overrides = {}
 
 
 class handler(BaseHTTPRequestHandler):
-    """Vercel serverless handler for /api/* routes."""
+    """Vercel serverless handler for web dashboard and /api/* routes."""
 
     def log_message(self, format, *args):
         pass
 
+    def _serve_file(self, filename: str, content_type: str):
+        search_paths = [
+            ROOT / "public" / filename,
+            ROOT / filename,
+            ROOT / "src" / "web" / "static" / filename,
+            Path(__file__).resolve().parent / filename,
+            Path(__file__).resolve().parent.parent / "public" / filename,
+            Path.cwd() / "public" / filename,
+            Path.cwd() / filename,
+        ]
+        for p in search_paths:
+            try:
+                if p.exists() and p.is_file():
+                    content = p.read_bytes()
+                    self.send_response(200)
+                    self.send_header("Content-Type", content_type)
+                    self.send_header("Content-Length", str(len(content)))
+                    self.send_header("Cache-Control", "public, max-age=3600")
+                    self.end_headers()
+                    self.wfile.write(content)
+                    return
+            except Exception:
+                continue
+
+        # If file could not be read from disk, send a 404
+        self.send_response(404)
+        self.send_header("Content-Type", "text/plain")
+        self.end_headers()
+        self.wfile.write(f"File {filename} not found on server.".encode("utf-8"))
+
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path.rstrip("/")
+        if not path:
+            path = "/"
+
         now = time.time()
         elapsed = now - _start_time
-
-        # Simulation clock in [0, 60] seconds
         sim_t = elapsed % 60.0
 
+        # Static assets and Web UI routing
+        if path in ("/", "", "/index.html"):
+            self._serve_file("index.html", "text/html; charset=utf-8")
+            return
+        elif path == "/style.css" or path.endswith("/style.css"):
+            self._serve_file("style.css", "text/css; charset=utf-8")
+            return
+        elif path == "/app.js" or path.endswith("/app.js"):
+            self._serve_file("app.js", "application/javascript; charset=utf-8")
+            return
+        elif path == "/favicon.ico":
+            self.send_response(204)
+            self.end_headers()
+            return
+
+        # API Endpoints
         if path.endswith("/api/status") or path == "/api/status":
             self._send_json({
                 "running": True,
@@ -68,8 +117,11 @@ class handler(BaseHTTPRequestHandler):
             self._handle_audit()
         elif path.endswith("/api/download/attendance.csv"):
             self._handle_csv_download()
+        elif not path.startswith("/api/"):
+            # Single Page Application fallback for any non-API routes
+            self._serve_file("index.html", "text/html; charset=utf-8")
         else:
-            self.send_error(404, "Endpoint not found")
+            self.send_error(404, f"API endpoint {path} not found")
 
     def do_POST(self):
         global _privacy_mode
@@ -78,7 +130,7 @@ class handler(BaseHTTPRequestHandler):
 
         if path.endswith("/api/action") or path == "/api/action":
             content_len = int(self.headers.get("Content-Length", 0))
-            body = self.rfile.read(content_len).decode("utf-8")
+            body = self.rfile.read(content_len).decode("utf-8") if content_len > 0 else "{}"
             data = json.loads(body) if body else {}
 
             action = data.get("action")

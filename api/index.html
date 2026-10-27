@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multimodal Attendance & Engagement Agent | Classroom Intelligence</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-icon">
+          <div class="pulse-ring"></div>
+          <span class="icon-glyph">✦</span>
+        </div>
+        <div>
+          <h1 class="brand-title">Multimodal Attendance & Engagement Agent</h1>
+          <p class="brand-subtitle">AI-Powered, Privacy-Preserving Classroom Intelligence System</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="live-pill" id="liveStatusPill">
+          <span class="status-dot"></span>
+          <span id="sessionTimerText">00:00</span>
+          <span class="tag-live">LIVE FEED</span>
+        </div>
+
+        <button class="btn btn-outline" id="btnTogglePrivacy" title="Mask student identities with cryptographic pseudonyms">
+          <span id="privacyIcon">🛡️</span> <span id="privacyLabel">Privacy Mode: OFF</span>
+        </button>
+
+        <button class="btn btn-primary" id="btnPauseResume">
+          <span id="playPauseIcon">⏸️</span> <span id="playPauseLabel">Pause Session</span>
+        </button>
+
+        <div class="dropdown-export">
+          <button class="btn btn-accent" id="btnExportMenu">
+            📥 Reports & Logs
+          </button>
+          <div class="dropdown-menu" id="exportDropdown">
+            <a href="/api/download/attendance.csv" download="attendance.csv">📄 Download Attendance CSV</a>
+            <button id="btnViewAuditReport">🎓 View Pedagogical Audit</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Dashboard Grid -->
+    <main class="dashboard-body">
+      <!-- Row 1: KPI Metrics Cards -->
+      <section class="kpi-grid">
+        <!-- Card 1: Engagement Score -->
+        <div class="kpi-card" id="kpiEngagement">
+          <div class="kpi-header">
+            <span class="kpi-title">Classroom Engagement</span>
+            <span class="kpi-badge badge-high" id="badgeEngagement">OPTIMAL</span>
+          </div>
+          <div class="kpi-content engagement-gauge-row">
+            <div class="gauge-container">
+              <svg viewBox="0 0 100 100" class="circular-chart">
+                <path class="circle-bg" d="M 50,50 m 0,-40 a 40,40 0 1 1 0,80 a 40,40 0 1 1 0,-80" />
+                <path class="circle" id="gaugeProgress" stroke-dasharray="0, 100" d="M 50,50 m 0,-40 a 40,40 0 1 1 0,80 a 40,40 0 1 1 0,-80" />
+              </svg>
+              <div class="gauge-center-text">
+                <span class="gauge-number" id="kpiAvgScore">0%</span>
+                <span class="gauge-unit">INDEX</span>
+              </div>
+            </div>
+            <div class="kpi-submetrics">
+              <div class="submetric-row">
+                <span class="dot dot-high"></span> <span>High Focus:</span>
+                <strong id="kpiHighCount">0</strong>
+              </div>
+              <div class="submetric-row">
+                <span class="dot dot-mod"></span> <span>Moderate:</span>
+                <strong id="kpiModCount">0</strong>
+              </div>
+              <div class="submetric-row">
+                <span class="dot dot-low"></span> <span>Disengaged:</span>
+                <strong id="kpiLowCount">0</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Sustained Attendance -->
+        <div class="kpi-card" id="kpiAttendance">
+          <div class="kpi-header">
+            <span class="kpi-title">Sustained Attendance</span>
+            <span class="kpi-badge badge-sustained">WINDOW: 10s</span>
+          </div>
+          <div class="kpi-content">
+            <div class="kpi-large-number">
+              <span id="kpiAttendanceRate">0%</span>
+              <span class="kpi-caption">Compliance Rate</span>
+            </div>
+            <div class="attendance-breakdown-bar">
+              <div class="bar-segment bar-present" id="barPresent" style="width: 70%"></div>
+              <div class="bar-segment bar-tardy" id="barTardy" style="width: 15%"></div>
+              <div class="bar-segment bar-absent" id="barAbsent" style="width: 15%"></div>
+            </div>
+            <div class="kpi-stat-pills">
+              <span class="stat-pill"><strong id="kpiPresentCount">0</strong> Present</span>
+              <span class="stat-pill"><strong id="kpiTardyCount">0</strong> Tardy</span>
+              <span class="stat-pill"><strong id="kpiAbsentCount">0</strong> Absent</span>
+              <span class="stat-pill pill-subtle"><strong id="kpiTransientCount">0</strong> Passerby Ignored</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Acoustic Dynamics -->
+        <div class="kpi-card" id="kpiAcoustic">
+          <div class="kpi-header">
+            <span class="kpi-title">Classroom Acoustic Dynamics</span>
+            <span class="kpi-badge badge-acoustic" id="badgeAcousticState">INITIALIZING</span>
+          </div>
+          <div class="kpi-content">
+            <div class="waveform-box">
+              <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+              <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+              <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            </div>
+            <div class="acoustic-detail-text">
+              <p id="acousticDescription">Analyzing classroom vocal activity and noise levels...</p>
+              <div class="acoustic-tags">
+                <span>Vocal Ratio: <strong id="kpiSpeechRatio">0%</strong></span>
+                <span>RMS Level: <strong id="kpiAcousticRMS">0.00</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: AI Decision Advisor -->
+        <div class="kpi-card" id="kpiAdvisor">
+          <div class="kpi-header">
+            <span class="kpi-title">AI Decision Support</span>
+            <span class="kpi-badge badge-ai">OFFLINE AGENT</span>
+          </div>
+          <div class="kpi-content">
+            <div class="advisor-quick-card">
+              <div class="advisor-icon">🤖</div>
+              <div class="advisor-lead">
+                <span class="advisor-label" id="advisorTopPriority">SYSTEM READY</span>
+                <h4 id="advisorTopTitle">Monitoring classroom telemetry</h4>
+              </div>
+            </div>
+            <p class="advisor-snippet" id="advisorTopSuggestion">The agent continuously observes attention drops, silence barriers, and monologue pacing.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Row 2: Visualizer (Left) + AI Recommendations Feed (Right) -->
+      <section class="split-view-row">
+        <!-- Left: Classroom Spatial HUD Visualizer -->
+        <div class="dashboard-panel panel-visualizer">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <h3>🎥 Classroom Spatial Perception & Bounding HUD</h3>
+              <span class="panel-subtitle">Multi-object tracking, head pose gaze vector, and sustained presence verification</span>
+            </div>
+            <div class="panel-actions">
+              <span class="badge-hud">TRACKS: <strong id="hudTrackCount">0</strong></span>
+            </div>
+          </div>
+          <div class="canvas-wrapper">
+            <canvas id="classroomCanvas" width="760" height="420"></canvas>
+            <div class="canvas-legend">
+              <span class="legend-item"><span class="legend-color color-focused"></span> Focused (>70%)</span>
+              <span class="legend-item"><span class="legend-color color-moderate"></span> Moderate</span>
+              <span class="legend-item"><span class="legend-color color-distracted"></span> Distracted / Away</span>
+              <span class="legend-item"><span class="legend-color color-drowsy"></span> Drowsy / Inactive</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: AI Teaching Recommendations Stream -->
+        <div class="dashboard-panel panel-suggestions">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <h3>💡 Real-Time AI Teaching Suggestions</h3>
+              <span class="panel-subtitle">Pedagogical interventions for attention recovery & pacing</span>
+            </div>
+            <span class="badge-count" id="suggCountBadge">0 alerts</span>
+          </div>
+          <div class="suggestions-list" id="suggestionsContainer">
+            <div class="empty-state">
+              <div class="empty-icon">🌱</div>
+              <p>No active pedagogical interventions needed. Classroom engagement is well balanced.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Row 3: Engagement Timeline Chart -->
+      <section class="dashboard-panel panel-timeline">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <h3>📈 Multimodal Session Dynamics & Engagement Timeline</h3>
+            <span class="panel-subtitle">Fused visual gaze, posture stability, and acoustic interaction trends</span>
+          </div>
+          <div class="timeline-legend">
+            <span class="legend-item"><span class="legend-line line-engagement"></span> Classroom Engagement (%)</span>
+            <span class="legend-item"><span class="legend-line line-speech"></span> Speech Activity Ratio</span>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="timelineChart" width="1160" height="200"></canvas>
+        </div>
+      </section>
+
+      <!-- Row 4: Attendance & Presence Ledger -->
+      <section class="dashboard-panel panel-attendance">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <h3>📋 Sustained Presence Attendance Ledger</h3>
+            <span class="panel-subtitle">Automated verification eliminating single-frame false positives</span>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-sm btn-outline" id="btnRefreshAttendance">🔄 Refresh Ledger</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="attendanceTable">
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Participant</th>
+                <th>Status</th>
+                <th>First Seen</th>
+                <th>Last Seen</th>
+                <th>Active Duration</th>
+                <th>Presence Ratio</th>
+                <th>Confidence</th>
+                <th>Privacy Hash</th>
+                <th>Manual Override</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceTableBody">
+              <tr><td colspan="10" class="table-empty">Loading enrolled roster...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- Post-Session Audit Modal -->
+    <div class="modal-overlay" id="auditModal" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>🎓 Post-Session Pedagogical Audit</h3>
+          <button class="modal-close" id="btnCloseModal">✕</button>
+        </div>
+        <div class="modal-body" id="auditModalContent">
+          <div class="audit-loading">Generating session audit analytics...</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" id="btnCopyAuditMarkdown">📋 Copy Markdown</button>
+          <button class="btn btn-primary" id="btnDownloadAudit">💾 Save Audit Report</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
